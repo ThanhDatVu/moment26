@@ -39,3 +39,25 @@ Caddy obtains and renews the HTTPS certificate. Share `https://photos.yourbrand.
 ```sh
 npm test
 ```
+
+## Existing host Nginx
+
+Use the separate Compose file to avoid binding Caddy to ports 80/443:
+
+```sh
+docker compose -f compose.nginx.yaml up -d --build
+```
+
+The app binds only to `127.0.0.1:3000`. Add a dedicated Nginx server block for your gallery domain with this location, then test Nginx and reload it. Configure HTTPS using your existing certificate tooling.
+
+```nginx
+location / {
+    proxy_pass http://127.0.0.1:3000;
+    proxy_http_version 1.1;
+    proxy_set_header Host $host;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_buffering off;
+    proxy_read_timeout 600s;
+}
+```

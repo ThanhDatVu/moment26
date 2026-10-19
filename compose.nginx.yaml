@@ -1,0 +1,13 @@
+services:
+  gallery:
+    build: .
+    environment:
+      DEFAULT_EVENT: ${DEFAULT_EVENT}
+    ports:
+      - "127.0.0.1:3000:3000"
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
