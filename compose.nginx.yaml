@@ -3,6 +3,7 @@ services:
     build: .
     environment:
       DEFAULT_EVENT: ${DEFAULT_EVENT}
+      REQUEST_TIMEOUT_MS: ${REQUEST_TIMEOUT_MS:-3600000}
     ports:
       - "127.0.0.1:3000:3000"
     restart: unless-stopped

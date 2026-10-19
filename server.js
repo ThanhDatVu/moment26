@@ -5,7 +5,10 @@ import { pathToFileURL } from 'node:url';
 
 const allowed = path => path === '/e' || path === '/e/zip' || /^\/(f|cb)\/[a-zA-Z0-9_./%-]+$/.test(path);
 
-export function createProxy({ upstream = 'https://app.hmphotobooth.net', defaultEvent = process.env.DEFAULT_EVENT } = {}) {
+export function createProxy({ upstream = 'https://app.hmphotobooth.net', defaultEvent = process.env.DEFAULT_EVENT, requestTimeoutMs = Number(process.env.REQUEST_TIMEOUT_MS || 3_600_000) } = {}) {
+  if (!Number.isSafeInteger(requestTimeoutMs) || requestTimeoutMs <= 0) {
+    throw new Error('REQUEST_TIMEOUT_MS must be a positive integer in milliseconds');
+  }
   const origin = new URL(upstream).origin;
   return http.createServer(async (req, res) => {
     const abort = new AbortController();
@@ -34,7 +37,7 @@ export function createProxy({ upstream = 'https://app.hmphotobooth.net', default
       }
       const response = await fetch(url, {
         method: req.method, headers, redirect: 'manual',
-        signal: AbortSignal.any([abort.signal, AbortSignal.timeout(600_000)]),
+        signal: AbortSignal.any([abort.signal, AbortSignal.timeout(requestTimeoutMs)]),
       });
       const location = response.headers.get('location');
       if (location) {

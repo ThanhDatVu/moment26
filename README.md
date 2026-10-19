@@ -27,7 +27,7 @@ Caddy obtains and renews the HTTPS certificate. Share `https://photos.yourbrand.
 ## Behavior and limits
 
 - Only GET/HEAD to `/e`, `/e/zip`, `/f/*`, `/cb/*` are forwarded. `/healthz` is local. Provider admin pages are unavailable.
-- Preserves download filenames, range requests and conditional media requests; streams binary responses with backpressure. Client disconnects cancel upstream requests. Requests have a ten-minute total limit.
+- Preserves download filenames, range requests and conditional media requests; streams binary responses with backpressure. Client disconnects cancel upstream requests. Requests have a one-hour total limit, configurable with `REQUEST_TIMEOUT_MS` (milliseconds; default `3600000`). Nginx’s `proxy_read_timeout 600s` measures inactivity between reads, so active downloads can continue beyond ten minutes.
 - Browser cookies and authorization headers are not forwarded. This implementation targets the supplied public, token-based gallery.
 - Event tokens retain the provider's existing access model. This proxy does not add tenant authorization or make tokens secret. Anyone with a valid event link can use it.
 - No persistent photo storage or proxy cache. Media traffic passes through your server, so hosting bandwidth matters.
