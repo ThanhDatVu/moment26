@@ -1,0 +1,3 @@
+{$DOMAIN} {
+    reverse_proxy gallery:3000
+}
